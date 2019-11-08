@@ -7,7 +7,7 @@
 DBRecord::DBRecord()
 {
     record_file = NULL;
-    last_primary_key = -1;
+    last_primary_key = 0;
     my_file_path = "./record_file.bat";
     srand((unsigned)time(NULL));    //随机
 }
@@ -34,7 +34,7 @@ void DBRecord::createRecord(Record &my_record, const int64_t &primary_key){
  * @param primary_key
  * @param number
  */
-void DBRecord::createRecordArray(Record *record_array, int64_t &primary_key, const int &number){
+void DBRecord::createRecordArray(Record *record_array, int64_t primary_key, const int &number){
 //    number = sizeof (*record_array) / sizeof (Record);
     record_array = new Record[number];
     for (int index = 0; index < number; ++index) {
@@ -68,6 +68,7 @@ bool DBRecord::appendRecord(const std::string &file_path, Record &record){
         std::cout << "papendRecord open file success!"<<std::endl;
         fs.write((char*)(&record), RECORD_SIZE_BYTE);
         fs.close();
+        last_primary_key = record.primary_key;
         return true;
     }
     return false;
@@ -77,10 +78,12 @@ bool DBRecord::appendRecord(const std::string &file_path, Record &record){
 bool DBRecord::appendRecordArray(const std::string &file_path, Record *record_array, const int &number){
     std::fstream fs(file_path, std::fstream::out | std::fstream::binary | std::fstream::app);
     if(fs.is_open()){
-        for (int index=0; index<number; ++index) {
+        int index=0;
+        for ( ;index<number; ++index) {
             fs.write((char*)(record_array+index), RECORD_SIZE_BYTE);
         }
         fs.close();
+        last_primary_key = record_array[index].primary_key;
     }
     return true;
 }
