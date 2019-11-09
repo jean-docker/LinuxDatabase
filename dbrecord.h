@@ -9,11 +9,14 @@
 class DBRecord
 {
 public:
+    static void deleteRecords(Record *record_array);
+    static DBRecord *newRecords(int number);
+public:
     DBRecord();
     ~DBRecord();
 
     //产生一条随机数据记录
-    void createRecord(Record &my_record, const int64_t &primary_key);
+    void createRecord(Record *my_record, const int64_t &primary_key);
     //产生一组(number个)随机数据记录
     void createRecordArray(Record *record_array, int64_t primary_key, const int &number);
     //获取记录键值（数据按键值存储，返回最后一条记录键值）

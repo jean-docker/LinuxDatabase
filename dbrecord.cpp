@@ -4,6 +4,13 @@
 #include <time.h>
 #include <fstream>
 
+void DBRecord::deleteRecords(Record *record_array){
+    if(NULL == record_array)
+        return;
+    delete [] record_array;
+    record_array = NULL;
+}
+
 DBRecord::DBRecord()
 {
     record_file = NULL;
@@ -21,11 +28,15 @@ DBRecord::~DBRecord(){
  * @param my_record
  * @param primary_key
  */
-void DBRecord::createRecord(Record &my_record, const int64_t &primary_key){
-    my_record.primary_key = primary_key + 1;
+void DBRecord::createRecord(Record *my_record, const int64_t &primary_key){
+    my_record->primary_key = primary_key + 1;
+//    srand((unsigned)time(NULL));
+//    std::cout<<my_record.primary_key<<" ";
     for (int index = 0; index < RECORD_LENGTH; ++index) {
-        my_record.non_primary_array[index] = rand();    //随机数
+        my_record->non_primary_array[index] = rand();    //随机数
+//        std::cout<<my_record->non_primary_array[index]<<"-";
     }
+//    std::cout<<std::endl;
 }
 
 /**
@@ -36,9 +47,16 @@ void DBRecord::createRecord(Record &my_record, const int64_t &primary_key){
  */
 void DBRecord::createRecordArray(Record *record_array, int64_t primary_key, const int &number){
 //    number = sizeof (*record_array) / sizeof (Record);
-    record_array = new Record[number];
+    Record *p_record = record_array;
     for (int index = 0; index < number; ++index) {
-        createRecord(*(record_array + index), primary_key++);
+        createRecord(p_record, primary_key);
+        primary_key += 1;
+//        std::cout<<p_record->primary_key<<" ";
+//        for (int j=0;j<RECORD_LENGTH;++j) {
+//            std::cout<<p_record->non_primary_array[j]<<" ";
+//        }
+//        std::cout<<std::endl;
+        p_record++;
     }
 }
 
@@ -97,17 +115,17 @@ int DBRecord::readRecordArray(const std::string &file_path, Record *record_array
         std::cout << "readRecordArray open file error!!!"<<std::endl;
         return false;
     }
-    record_array = new Record[number]();
+//    record_array = new Record[number]();
     int index=0;
     while(index<number) {
         fs.read((char*)(record_array+index), RECORD_SIZE_BYTE);
         if(fs.eof())
             break;  //防止多读一条无效记录
-        std::cout<<"read one record: "<<record_array[index].primary_key<<std::endl;
-        for(int i = 0;i < 100; i++){
-            std::cout << record_array[index].non_primary_array[i]<<" |";
-        }
-        std::cout<<std::endl;
+//        std::cout<<"read one record: "<<record_array[index].primary_key<<std::endl;
+//        for(int i = 0;i < 100; i++){
+//            std::cout << record_array[index].non_primary_array[i]<<" |";
+//        }
+//        std::cout<<std::endl;
         ++index;
     }
     fs.close();

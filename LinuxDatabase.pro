@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-    dbrecord.cpp
+    dbrecord.cpp \
+    bplustree.cpp
 
 HEADERS += \
     struct.h \
-    dbrecord.h
+    dbrecord.h \
+    bplustree.h
