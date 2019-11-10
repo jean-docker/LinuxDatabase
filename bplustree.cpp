@@ -1,5 +1,6 @@
 #include "bplustree.h"
 #include<iostream>
+#include<fstream>
 BPlusTree::BPlusTree()
 {
 
@@ -396,6 +397,45 @@ void BPlusTree::searchValueLessOrEqual(BPlusTreeNode *&root, int64_t *key_set, i
         if(p_node->index_nodes[p_node->index_node_size-1].value <= max_value)
             searchValueLessOrEqual(p_node->childs[p_node->child_size-1], key_set, count, max_value);
     }
+}
+
+//----------------------read---write----------------------
+void BPlusTree::writeBPlusTree(string file_home, BPlusTreeNode *root, int col){
+    std::fstream fs(file_home+"_"+to_string(col), std::fstream::out | std::fstream::binary);
+//    BPlusTreeNode *p_node = root;
+    if(fs.is_open()){
+        writeBPlusTreeNode(fs, root);
+    }
+}
+
+BPlusTreeNode* BPlusTree::readBPlusTree(string file_home, int col){
+    std::fstream fs(file_home+"_"+to_string(col), std::fstream::in | std::fstream::binary);
+    BPlusTreeNode *p_node = NULL;
+    if(fs.is_open()){
+        p_node = readBPlusTreeNode(fs);
+    }
+    return p_node;
+}
+
+void BPlusTree::writeBPlusTreeNode(std::fstream &fs, BPlusTreeNode *node){
+    if(NULL == node || !fs.is_open())
+        return;
+    //当前节点
+    fs.write((char*)node, sizeof(BPlusTreeNode));
+    for(int index=0; index<node->child_size; ++index){
+        writeBPlusTreeNode(fs, node->childs[index]);
+    }
+}
+
+BPlusTreeNode* BPlusTree::readBPlusTreeNode(std::fstream &fs){
+    BPlusTreeNode *p_node = newBPlusNode();
+    if(NULL == p_node)
+        return NULL;
+    fs.read((char*)p_node, sizeof (BPlusTreeNode));
+    for(int index=0; index<p_node->child_size; ++index){
+        p_node->childs[index] = readBPlusTreeNode(fs);
+    }
+    return  p_node;
 }
 
 //--------------------------------------------------------

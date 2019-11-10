@@ -110,7 +110,7 @@ bool DBRecord::appendRecordArray(const std::string &file_path, Record *record_ar
 int DBRecord::readRecordArray(const std::string &file_path, Record *record_array, const int &number){
     if(number <= 0)
         return false;
-    std::fstream fs(file_path, std::fstream::in | std::fstream::binary);
+    std::fstream fs(file_path, std::fstream::in | std::fstream::binary);;
     if(!fs.is_open()){
         std::cout << "readRecordArray open file error!!!"<<std::endl;
         return false;

@@ -29,6 +29,9 @@ public:
     //文件读写
     void writeBPlusTree(string file_home, BPlusTreeNode *root, int col);
     BPlusTreeNode *readBPlusTree(string file_home, int col);
+private:
+    void writeBPlusTreeNode(std::fstream &fs, BPlusTreeNode *node);
+    BPlusTreeNode *readBPlusTreeNode(std::fstream &fs);
 
     void show(BPlusTreeNode *root, int level, int num){
         if(!root)

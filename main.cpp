@@ -123,6 +123,12 @@ int main()
 //    }
 //    cout<<endl;
 
+//    testBPlusTree.writeBPlusTree("./index", b_plus_tree, 1);
+    BPlusTreeNode *p = testBPlusTree.readBPlusTree("./index", 1);
+    cout <<"read B+ tree"<<endl;
+    show(p, 1, 1);
+    BPlusTree::deleteBPlusTree(p);
+
 
     DBRecord::deleteRecords(record_array);
     BPlusTree::deleteBPlusTree(b_plus_tree);
