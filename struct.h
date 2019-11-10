@@ -11,6 +11,7 @@ using namespace std;
 //#define int64   int         //后续删除
 #define RECORD_SIZE_BYTE    (sizeof(int64_t)*(RECORD_LENGTH+1))
 #define B_PLUS_TREE_INDEX_NODE_SIZE   4
+#define SEARCH_RESULT_SET_MAX_SIZE  10      //查询结果过多，最大查询数量
 
 /**
   *文件数据记录结构、单条记录

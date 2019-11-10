@@ -270,7 +270,139 @@ std::cout<<"nonleaf split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
     }
 }
 
+//---------------------search-----------------------------------
+void BPlusTree::searchValueEqual(BPlusTreeNode *&root, int64_t *key_set, int &count, const int64_t &value){
+    if(NULL == root || count >= SEARCH_RESULT_SET_MAX_SIZE)
+        return;
+    BPlusTreeNode *p_node = root;
+    if(p_node->is_leaf){    //叶节点取值
+        for (int index=0; index<p_node->index_node_size; ++index) {
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE)
+                return;
+            if(p_node->index_nodes[index].value == value){
+                key_set[count] = p_node->index_nodes[index].primary_key;
+                count += 1;
+            }else if (p_node->index_nodes[index].value > value) {
+                break;
+            }
+        }
+    }else { //非叶节点
+        int index=0;
+        for( ; index<p_node->index_node_size; ++index){
+            if(p_node->index_nodes[index].value >= value){
+                searchValueEqual(p_node->childs[index], key_set, count, value);
+                break;
+            }
+        }
+        if(index == p_node->index_node_size)
+            searchValueEqual(p_node->childs[index], key_set, count, value);
+        else {
+            searchValueEqual(p_node->childs[index+1], key_set, count, value);
+        }
+    }
+}
 
+void BPlusTree::searchValueRange(BPlusTreeNode *&root, int64_t *key_set, int &count, const int64_t &min_value, const int64_t &max_value){
+    if(NULL == root || count >= SEARCH_RESULT_SET_MAX_SIZE)
+        return;
+    BPlusTreeNode *p_node = root;
+    if(p_node->is_leaf){    //叶节点取值
+        for (int index=0; index<p_node->index_node_size; ++index) {
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE || p_node->index_nodes[index].value > max_value)
+                return;
+            if(p_node->index_nodes[index].value >= min_value){
+                key_set[count] = p_node->index_nodes[index].primary_key;
+                count += 1;
+            }
+        }
+    }else { //非叶节点
+        int index=0;
+        for( ; index<p_node->index_node_size; ++index){
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE || p_node->index_nodes[index].value > max_value)
+                break;
+            if(p_node->index_nodes[index].value >= min_value){
+                searchValueRange(p_node->childs[index], key_set, count, min_value, max_value);
+            }
+        }
+        if(index == p_node->index_node_size)
+            searchValueRange(p_node->childs[index], key_set, count, min_value, max_value);
+        else if(p_node->index_nodes[index].value > max_value && count < SEARCH_RESULT_SET_MAX_SIZE)
+            searchValueRange(p_node->childs[index], key_set, count, min_value, max_value);
+    }
+}
+
+void BPlusTree::searchValueGreaterOrEqual(BPlusTreeNode *&root, int64_t *key_set, int &count, const int64_t &min_value){
+    if(NULL == root || count >= SEARCH_RESULT_SET_MAX_SIZE)
+        return;
+    BPlusTreeNode *p_node = root;
+    if(p_node->is_leaf){    //叶节点取值
+        for (int index=0; index<p_node->index_node_size; ++index) {
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE)
+                return;
+            if(p_node->index_nodes[index].value >= min_value){
+                key_set[count] = p_node->index_nodes[index].primary_key;
+                count += 1;
+            }
+        }
+    }else { //非叶节点
+        if(p_node->index_nodes[0].value >= min_value)
+            searchValueGreaterOrEqual(p_node->childs[0], key_set, count, min_value);
+        int index=0;
+        for(; index<p_node->index_node_size; ++index){
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE)
+                break;
+            if(p_node->index_nodes[index].value >= min_value){
+                if(count == 0 && index > 0)
+                    searchValueGreaterOrEqual(p_node->childs[index], key_set, count, min_value);
+                searchValueGreaterOrEqual(p_node->childs[index+1], key_set, count, min_value);
+            }
+        }
+        if(count == 0 && index == p_node->index_node_size){ //非叶节点 最后一个索引值 < min_value
+            searchValueGreaterOrEqual(p_node->childs[index], key_set, count, min_value);
+        }
+    }
+}
+
+void BPlusTree::searchValueLessOrEqual(BPlusTreeNode *&root, int64_t *key_set, int &count, const int64_t &max_value){
+    if(NULL == root || count >= SEARCH_RESULT_SET_MAX_SIZE)
+        return;
+    BPlusTreeNode *p_node = root;
+    if(p_node->is_leaf){    //叶节点取值
+        for (int index=0; index<p_node->index_node_size; ++index) {
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE)
+                return;
+            if(p_node->index_nodes[index].value <= max_value){
+                key_set[count] = p_node->index_nodes[index].primary_key;
+                count += 1;
+            }
+        }
+    }else { //非叶节点
+        int index=0;
+        for(; index<p_node->index_node_size; ++index){
+            if(count >= SEARCH_RESULT_SET_MAX_SIZE)
+                break;
+            if(p_node->index_nodes[index].value > max_value){
+                searchValueLessOrEqual(p_node->childs[index], key_set, count, max_value);
+                break;
+            }
+            if(p_node->index_nodes[index].value <= max_value){
+                searchValueLessOrEqual(p_node->childs[index], key_set, count, max_value);
+            }
+        }
+//        if(count == 0 && p_node->index_nodes[0].value > max_value){
+//            searchValueLessOrEqual(p_node->childs[0], key_set, count, max_value);
+//        }
+
+        if(p_node->index_nodes[p_node->index_node_size-1].value <= max_value)
+            searchValueLessOrEqual(p_node->childs[p_node->child_size-1], key_set, count, max_value);
+    }
+}
+
+//--------------------------------------------------------
+/**
+ * @brief 静态方法
+ * @param root
+ */
 void BPlusTree::deleteBPlusTree(BPlusTreeNode *&root){
     if(NULL == root)
         return;

@@ -93,6 +93,37 @@ int main()
 //    }
 
 
+    int64_t key_set[SEARCH_RESULT_SET_MAX_SIZE];
+    int count = 0;
+//    testBPlusTree.searchValueEqual(b_plus_tree, key_set, count, 25757);
+//    for(int i=0; i<count; ++i){
+//        cout<<" " <<key_set[i];
+//    }
+//    cout<<endl;
+
+
+//    count = 0;
+//    testBPlusTree.searchValueRange(b_plus_tree, key_set, count, 0, 5000);
+//    for(int i=0; i<count; ++i){
+//        cout<<" " <<key_set[i];
+//    }
+//    cout<<endl;
+
+//    count = 0;
+//    testBPlusTree.searchValueGreaterOrEqual(b_plus_tree, key_set, count, 1000);
+//    for(int i=0; i<count; ++i){
+//        cout<<" " <<key_set[i];
+//    }
+//    cout<<endl;
+
+//    count = 0;
+//    testBPlusTree.searchValueLessOrEqual(b_plus_tree, key_set, count, 29000);
+//    for(int i=0; i<count; ++i){
+//        cout<<" " <<key_set[i];
+//    }
+//    cout<<endl;
+
+
     DBRecord::deleteRecords(record_array);
     BPlusTree::deleteBPlusTree(b_plus_tree);
     return 0;

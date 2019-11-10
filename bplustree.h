@@ -21,6 +21,14 @@ public:
     IndexNode* newIndexNode(const Record &record, int col);
 
     //查询
+    void searchValueEqual(BPlusTreeNode* &root, int64_t *key_set, int &count, const int64_t &value);
+    void searchValueRange(BPlusTreeNode* &root, int64_t *key_set, int &count, const int64_t &min_value, const int64_t &max_value);
+    void searchValueGreaterOrEqual(BPlusTreeNode* &root, int64_t *key_set, int &count, const int64_t &min_value);
+    void searchValueLessOrEqual(BPlusTreeNode* &root, int64_t *key_set, int &count, const int64_t &max_value);
+
+    //文件读写
+    void writeBPlusTree(string file_home, BPlusTreeNode *root, int col);
+    BPlusTreeNode *readBPlusTree(string file_home, int col);
 
     void show(BPlusTreeNode *root, int level, int num){
         if(!root)
