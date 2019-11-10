@@ -1,7 +1,10 @@
 #ifndef DBRECORD_H
 #define DBRECORD_H
 #include "struct.h"
-#include <string>
+#include <stdlib.h>
+#include <iostream>
+#include <time.h>
+#include <fstream>
 /**
  * @brief 文件记录操作（产生随机数据记录、读取、保存数据）
  */

@@ -72,10 +72,6 @@ void Work::searchEqual(){
     cin>>col>>value;
     if(col < 1 || col > RECORD_LENGTH)
         return;
-//    int64_t sum = my_DBrecord->getPrimaryKeyFromFile(db_file_path); //获取记录数
-//    if(sum <= 0)
-//        return;
-//    DBRecord *record_array = new DBRecord[sum];
     //读取索引
     BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col-1);
     int count = 0;

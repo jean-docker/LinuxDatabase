@@ -4,11 +4,9 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 #include<iostream>
-#include <string>
 
 using namespace std;
 #define RECORD_LENGTH   100     //每条记录属性个数
-//#define int64   int         //后续删除
 #define RECORD_SIZE_BYTE    (sizeof(int64_t)*(RECORD_LENGTH+1))
 #define B_PLUS_TREE_INDEX_NODE_SIZE   4
 #define SEARCH_RESULT_SET_MAX_SIZE  10      //查询结果过多，最大查询数量

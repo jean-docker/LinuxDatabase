@@ -1,6 +1,8 @@
 #ifndef BPLUSTREE_H
 #define BPLUSTREE_H
 #include "struct.h"
+#include<iostream>
+#include<fstream>
 
 class BPlusTree
 {
@@ -33,19 +35,6 @@ private:
     void writeBPlusTreeNode(std::fstream &fs, BPlusTreeNode *node);
     BPlusTreeNode *readBPlusTreeNode(std::fstream &fs);
 
-    void show(BPlusTreeNode *root, int level, int num){
-        if(!root)
-            return;
-        cout<<"level="<<level<<",num="<<num<<"  ";
-        for (int i=0;i<root->index_node_size;++i) {
-            cout<<root->index_nodes[i].value<<" ";
-        }
-        cout<<endl<<"----------------------------------------"<<endl;
-
-        for (int i=0;i<root->child_size;++i) {
-            show(root->childs[i], level+1, i+1);
-        }
-    }
 private:
     int insertIndexNodeToLeaf(BPlusTreeNode *&current_node, IndexNode *&index_node);
     int insertIndexNodeToNonLeaf(BPlusTreeNode *&current_node, IndexNode *index_node);

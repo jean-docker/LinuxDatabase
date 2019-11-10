@@ -1,6 +1,5 @@
 #include "bplustree.h"
-#include<iostream>
-#include<fstream>
+
 BPlusTree::BPlusTree()
 {
 
@@ -16,9 +15,7 @@ BPlusTreeNode* BPlusTree::createBPlusTree(const Record *record_array,  int numbe
     BPlusTreeNode *root = newBPlusNode();
     if(!root)
         return NULL;
-//    std::cout<<"insert begin ";
     for (int num = 0; num < number; ++num) {
-//        std::cout<<"insert "<<num<<std::endl;
         insertIndexNode(root, root, newIndexNode(record_array[num], col));
     }
 
@@ -66,8 +63,6 @@ void BPlusTree::insertIndexNode(BPlusTreeNode* &root, BPlusTreeNode* &current_no
 
 
 IndexNode * BPlusTree::newIndexNode(const Record &record, int col){
-//    if(col < 1 || col > 100)
-//        return NULL;
     IndexNode *p_index_node = new IndexNode;
     p_index_node->primary_key = record.primary_key;
     p_index_node->value = record.non_primary_array[col];
@@ -95,8 +90,6 @@ int BPlusTree::insertIndexNodeToLeaf(BPlusTreeNode *&current_node, IndexNode *&i
     current_node->index_nodes[index].value = index_node->value;
     current_node->index_nodes[index].primary_key = index_node->primary_key;
     current_node->index_node_size += 1;         //节点索引数 +1
-
-//    std::cout<<"inserted one:"<<index_node->primary_key<<"---"<<index_node->value<<std::endl;
     return index;
 }
 
@@ -159,8 +152,6 @@ void BPlusTree::splitLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_node
     int parent_pos=-1;
     BPlusTreeNode *p_parent = parent(root, current_node, parent_pos);  //当前节点对应父节点的孩子数组位置（下标）
     int index;
-
-std::cout<<"split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
     //当前节点分裂成两份 0~M/2-1 、 M/2 ~ M-1
     int second_index = B_PLUS_TREE_INDEX_NODE_SIZE/2;
     BPlusTreeNode *right_brother = newBPlusNode();
@@ -170,7 +161,6 @@ std::cout<<"split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
         right_brother->index_nodes[right_brother->index_node_size].primary_key = current_node->index_nodes[second_index].primary_key;
         right_brother->index_node_size += 1;    //新节点索引数+1
         current_node->index_node_size -= 1;     //当前节点索引数-1
-
         second_index += 1;
     }
     right_brother->next = current_node->next;   //右兄弟
@@ -179,7 +169,6 @@ std::cout<<"split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
 
     //将分裂的新节点插入当前节点的父节点(非叶节点)
     if(NULL == p_parent){
-        std::cout<<"no parent!!"<<std::endl;
         //无父节点 新建父节点
         p_parent = newBPlusNode();
         p_parent->is_leaf = false;
@@ -189,7 +178,6 @@ std::cout<<"split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
         p_parent->index_node_size = 1;
         p_parent->child_size = 2;
         root = p_parent;
-
     }else {
         //存在父节点
         index = p_parent->index_node_size;
@@ -202,21 +190,16 @@ std::cout<<"split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
         p_parent->childs[parent_pos+1] = right_brother;
         p_parent->index_node_size += 1;
         p_parent->child_size += 1;
-
-//        show(root, 1, 1);
         //检查父节点插入索引后是否需要分裂
         if(p_parent->index_node_size == B_PLUS_TREE_INDEX_NODE_SIZE)
             splitNonLeafNode(root, p_parent);
     }
-//    show(root, 1, 1);
 }
 
 void BPlusTree::splitNonLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_node){
     int parent_pos=-1;
     BPlusTreeNode *p_parent = parent(root, current_node, parent_pos);  //当前节点对应父节点的孩子数组位置（下标）
     int index;
-
-std::cout<<"nonleaf split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
 
     //当前节点分裂成两份 0~M/2-1 、 M/2 ~ M-1
     int second_index = B_PLUS_TREE_INDEX_NODE_SIZE/2;
@@ -251,8 +234,6 @@ std::cout<<"nonleaf split parent="<<p_parent<<" pos="<<parent_pos<<std::endl;
 
         if(root == current_node)
             root = p_parent;
-        std::cout<<"root ===="<<root->is_leaf<<std::endl;
-//        show(root, 11, 1);
     }else {
         //存在父节点
         index = p_parent->index_node_size;
@@ -390,9 +371,6 @@ void BPlusTree::searchValueLessOrEqual(BPlusTreeNode *&root, int64_t *key_set, i
                 searchValueLessOrEqual(p_node->childs[index], key_set, count, max_value);
             }
         }
-//        if(count == 0 && p_node->index_nodes[0].value > max_value){
-//            searchValueLessOrEqual(p_node->childs[0], key_set, count, max_value);
-//        }
 
         if(p_node->index_nodes[p_node->index_node_size-1].value <= max_value)
             searchValueLessOrEqual(p_node->childs[p_node->child_size-1], key_set, count, max_value);
@@ -402,7 +380,6 @@ void BPlusTree::searchValueLessOrEqual(BPlusTreeNode *&root, int64_t *key_set, i
 //----------------------read---write----------------------
 void BPlusTree::writeBPlusTree(string file_home, BPlusTreeNode *root, int col){
     std::fstream fs(file_home+"_"+to_string(col), std::fstream::out | std::fstream::binary);
-//    BPlusTreeNode *p_node = root;
     if(fs.is_open()){
         writeBPlusTreeNode(fs, root);
     }
