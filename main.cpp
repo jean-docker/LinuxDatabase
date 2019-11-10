@@ -1,6 +1,7 @@
 #include <iostream>
 #include "dbrecord.h"
 #include "bplustree.h"
+#include "work.h"
 using namespace std;
 void show(BPlusTreeNode *root, int level, int num){
     if(!root)
@@ -132,5 +133,9 @@ int main()
 
     DBRecord::deleteRecords(record_array);
     BPlusTree::deleteBPlusTree(b_plus_tree);
+
+    Work *my_work = new Work();
+    my_work->do_work();
+
     return 0;
 }
