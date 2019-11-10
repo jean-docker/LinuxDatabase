@@ -9,7 +9,7 @@ public:
     ~BPlusTree();
 
 public:
-    static void deleteBPlusTree(BPlusTreeNode *root);
+    static void deleteBPlusTree(BPlusTreeNode *&root);
 
 
     //创建B+树
@@ -17,7 +17,7 @@ public:
     BPlusTreeNode* newBPlusNode();
 
     //插入索引节点
-    void insertIndexNode(BPlusTreeNode *root, BPlusTreeNode *current_node, IndexNode *index_node);
+    void insertIndexNode(BPlusTreeNode* &root, BPlusTreeNode* &current_node, IndexNode *index_node);
     IndexNode* newIndexNode(const Record &record, int col);
 
     //查询
@@ -36,11 +36,11 @@ public:
         }
     }
 private:
-    int insertIndexNodeToLeaf(BPlusTreeNode *current_node, IndexNode *index_node);
-    int insertIndexNodeToNonLeaf(BPlusTreeNode *current_node, IndexNode *index_node);
-    BPlusTreeNode *parent(BPlusTreeNode *root, const BPlusTreeNode *current_node, int &p_index);
-    void splitLeafNode(BPlusTreeNode *root, BPlusTreeNode *current_node);
-    void splitNonLeafNode(BPlusTreeNode *root, BPlusTreeNode *current_node);
+    int insertIndexNodeToLeaf(BPlusTreeNode *&current_node, IndexNode *&index_node);
+    int insertIndexNodeToNonLeaf(BPlusTreeNode *&current_node, IndexNode *index_node);
+    BPlusTreeNode *parent(BPlusTreeNode *&root, BPlusTreeNode *&current_node, int &p_index);
+    void splitLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_node);
+    void splitNonLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_node);
 };
 
 #endif // BPLUSTREE_H
