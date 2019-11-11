@@ -21,9 +21,9 @@ int main()
     DBRecord testRecord;
     Record record, *record_array=NULL;
 
-    int NUMBER = 10;
+    int NUMBER = 50;
 //    Record record_array[NUMBER];
-
+    int col = 1;
 
     BPlusTreeNode *b_plus_tree=NULL;
     BPlusTree testBPlusTree;
@@ -44,6 +44,9 @@ int main()
     record_array = new Record[NUMBER];
 
 //    testRecord.createRecordArray(record_array, 0, NUMBER);
+//        if(testRecord.appendRecordArray(testRecord.getFilePath(), record_array, NUMBER)){
+//            cout << "records save success!"<<endl;
+//        }
 //    cout << "create end"<<endl;
 //    for(int j = 0; j < NUMBER; ++j) {
 //        cout << "primari_key: "<<(record_array+j)->primary_key<<" # ";
@@ -55,7 +58,7 @@ int main()
 
 
 //    cout << "begin read"<<endl;
-    int num = testRecord.readRecordArray(testRecord.getFilePath(), record_array, NUMBER);
+    int num = testRecord.readRecordArray("./record_file.bat", record_array, NUMBER);
 //    cout << "end read"<<endl;
 
 //    for (int i = 0;i<NUMBER;++i) {
@@ -66,15 +69,21 @@ int main()
 //        cout<<endl;
 //    }
 
+cout << "-----------------end col=1  [0]---------------"<<endl;
         for (int i = 0;i<NUMBER;++i) {
-            cout<<record_array[i].non_primary_array[1]<<" ";
+            cout<<record_array[i].non_primary_array[0]<<" ";
         }
         cout<<endl;
+        cout << "-----------------end col=2  [1]---------------"<<endl;
+                for (int i = 0;i<NUMBER;++i) {
+                    cout<<record_array[i].non_primary_array[1]<<" ";
+                }
+                cout<<endl;
 
 //    for(int i=0;i<num;++i){
 //        cout << record_array[i].primary_key<<" |";
 //    }
-    cout << "--------------------------------"<<endl;
+
 //    if(testRecord.readRecordByPrimaryKey(testRecord.getFilePath(), record, 1)){
 //        cout << "readRecordByPrimaryKey success!"<<endl;
 //    }
@@ -84,9 +93,9 @@ int main()
 //    }
 
 //    cout << "begin create tree"<<endl;
-    b_plus_tree = testBPlusTree.createBPlusTree(record_array, NUMBER, 1);
-//    cout << "end create tree"<<endl;
-
+    b_plus_tree = testBPlusTree.createBPlusTree(record_array, NUMBER, col);
+////    cout << "end create tree"<<endl;
+    testBPlusTree.writeBPlusTree("./index", b_plus_tree, col);
     show(b_plus_tree, 1, 1);
 
 //    for (int i=0;i<b_plus_tree->index_node_size;++i) {
@@ -125,17 +134,18 @@ int main()
 //    cout<<endl;
 
 //    testBPlusTree.writeBPlusTree("./index", b_plus_tree, 1);
-    BPlusTreeNode *p = testBPlusTree.readBPlusTree("./index", 1);
-    cout <<"read B+ tree"<<endl;
-    show(p, 1, 1);
-    BPlusTree::deleteBPlusTree(p);
+//    BPlusTreeNode *p = testBPlusTree.readBPlusTree("./index", col);
+//    cout <<"read B+ tree"<<endl;
+//    show(p, 1, 1);
+//    BPlusTree::deleteBPlusTree(p);
 
 
     DBRecord::deleteRecords(record_array);
     BPlusTree::deleteBPlusTree(b_plus_tree);
 
-    Work *my_work = new Work();
-    my_work->do_work();
+//    Work *my_work = new Work();
+//    my_work->do_work();
+//    delete  my_work;
 
     return 0;
 }

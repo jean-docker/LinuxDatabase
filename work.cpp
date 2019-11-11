@@ -68,12 +68,15 @@ int Work::search(){
 void Work::searchEqual(){
     int col;
     int64_t value;
-    cout<<"input search col and value: ";
+    cout<<"input search col(1--100) and value: ";
     cin>>col>>value;
     if(col < 1 || col > RECORD_LENGTH)
         return;
     //读取索引
-    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col-1);
+    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col);
+    if(NULL == b_plus_tree){    //没有索引文件
+        b_plus_tree = createBPlusTree(db_file_path, col);
+    }
     int count = 0;
     Record record;
     int64_t key_set[SEARCH_RESULT_SET_MAX_SIZE];
@@ -94,7 +97,10 @@ void Work::searchLess(){
     if(col < 1 || col > RECORD_LENGTH)
         return;
     //读取索引
-    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col-1);
+    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col);
+    if(NULL == b_plus_tree){    //没有索引文件
+        b_plus_tree = createBPlusTree(db_file_path, col);
+    }
     int count = 0;
     Record record;
     int64_t key_set[SEARCH_RESULT_SET_MAX_SIZE];
@@ -115,7 +121,10 @@ void Work::searchGreater(){
     if(col < 1 || col > RECORD_LENGTH)
         return;
     //读取索引
-    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col-1);
+    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col);
+    if(NULL == b_plus_tree){    //没有索引文件
+        b_plus_tree = createBPlusTree(db_file_path, col);
+    }
     int count = 0;
     Record record;
     int64_t key_set[SEARCH_RESULT_SET_MAX_SIZE];
@@ -136,7 +145,10 @@ void Work::searchBetween(){
     if(col < 1 || col > RECORD_LENGTH || min_value > max_value)
         return;
     //读取索引
-    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col-1);
+    BPlusTreeNode *b_plus_tree = my_B_plus_tree->readBPlusTree(index_file_path, col);
+    if(NULL == b_plus_tree){    //没有索引文件
+        b_plus_tree = createBPlusTree(db_file_path, col);
+    }
     int count = 0;
     Record record;
     int64_t key_set[SEARCH_RESULT_SET_MAX_SIZE];
@@ -183,7 +195,7 @@ void Work::insertOneRecord(){
 
 void Work::insertArray(){
     int sum;
-    cout<<"how many recors you want to insert: ";
+    cout<<"how many records you want to insert: ";
     cin>>sum;
     if(sum<=0)
         return;
@@ -207,4 +219,14 @@ void Work::showRecordArray(Record *record_array, int number){
     for(int count = 0; count < number; ++count){
         showRecord(*(record_array+count));
     }
+}
+
+BPlusTreeNode *Work::createBPlusTree(string db_file_path, int col){
+    BPlusTreeNode *p_tree;
+    int64_t sum = my_DBrecord->getPrimaryKeyFromFile(db_file_path);
+    Record *record_array = new Record[sum];
+    p_tree = my_B_plus_tree->createBPlusTree(record_array, sum, col);
+    my_B_plus_tree->writeBPlusTree(index_file_path, p_tree, col);
+    delete [] record_array;
+    return p_tree;
 }

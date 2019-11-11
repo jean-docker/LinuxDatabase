@@ -31,6 +31,9 @@ public:
     void showRecord(const Record &record);
     void showRecordArray(Record *record_array, int number);
 
+    //创建索引 B+树
+    BPlusTreeNode *createBPlusTree(string db_file_path, int col);
+
 private:
     DBRecord *my_DBrecord;
     BPlusTree *my_B_plus_tree;
