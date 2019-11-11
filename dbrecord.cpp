@@ -62,7 +62,7 @@ int64_t DBRecord::getPrimaryKeyFromFile(const std::string &file_path){
     fs.seekg(0, fs.end);
     last_primary_key = fs.tellg();
     fs.close();
-
+cout<<"last primary key="<<last_primary_key<<endl;
     return last_primary_key;
 }
 

@@ -65,7 +65,7 @@ void BPlusTree::insertIndexNode(BPlusTreeNode* &root, BPlusTreeNode* &current_no
 IndexNode * BPlusTree::newIndexNode(const Record &record, int col){
     IndexNode *p_index_node = new IndexNode;
     p_index_node->primary_key = record.primary_key;
-    p_index_node->value = record.non_primary_array[col];
+    p_index_node->value = record.non_primary_array[col-1];
 
     return p_index_node;
 }
@@ -131,13 +131,13 @@ BPlusTreeNode *BPlusTree::parent(BPlusTreeNode *&root, BPlusTreeNode *&current_n
            return root;
         }
         else {
-            //子节点最大值 < 查询节点最小值，即，查询节点在右侧
-            if(root->childs[index]->index_nodes[root->childs[index]->index_node_size-1].value < current_node->index_nodes[0].value)
-                continue;
-            //子节点最小值 > 查询节点最大值，即，查询节点在左侧
-            if(root->childs[index]->index_nodes[0].value > current_node->index_nodes[current_node->index_node_size-1].value) {
-                break;
-            }
+//            //子节点最大值 < 查询节点最小值，即，查询节点在右侧
+//            if(root->childs[index]->index_nodes[root->childs[index]->index_node_size-1].value < current_node->index_nodes[0].value)
+//                continue;
+//            //子节点最小值 > 查询节点最大值，即，查询节点在左侧
+//            if(root->childs[index]->index_nodes[0].value > current_node->index_nodes[current_node->index_node_size-1].value) {
+//                break;
+//            }
             p_parent = parent(root->childs[index], current_node, p_index);
             if(NULL != p_parent){
                 break;
@@ -181,7 +181,6 @@ void BPlusTree::splitLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_node
     }else {
         //存在父节点
         index = p_parent->index_node_size;
-        std::cout<<"parent index="<<index<<std::endl;
         for(; index > parent_pos; --index){
             p_parent->index_nodes[index].value = p_parent->index_nodes[index-1].value;  //索引值后移
             p_parent->childs[index+1] = p_parent->childs[index];                        //子节点指针后移
@@ -201,10 +200,11 @@ void BPlusTree::splitNonLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_n
     BPlusTreeNode *p_parent = parent(root, current_node, parent_pos);  //当前节点对应父节点的孩子数组位置（下标）
     int index;
 
-    //当前节点分裂成两份 0~M/2-1 、 M/2 ~ M-1
-    int second_index = B_PLUS_TREE_INDEX_NODE_SIZE/2;
+    //当前节点分裂成两份 0~M/2-1 、 M/2+1 ~ M-1
+    int second_index = B_PLUS_TREE_INDEX_NODE_SIZE/2 + 1;
     BPlusTreeNode *right_brother = newBPlusNode();
     right_brother->is_leaf = false;
+    right_brother->index_node_size = right_brother->child_size = 0;
     while(second_index < B_PLUS_TREE_INDEX_NODE_SIZE) {
         //复制节点信息
         right_brother->index_nodes[right_brother->index_node_size].value = current_node->index_nodes[second_index].value;
@@ -217,6 +217,16 @@ void BPlusTree::splitNonLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_n
         current_node->child_size -= 1;
         second_index += 1;
     }
+//    cout<<current_node->index_nodes[B_PLUS_TREE_INDEX_NODE_SIZE/2].value<<" "<<current_node->child_size<<endl;
+    //最后一个孩子节点
+    right_brother->childs[right_brother->child_size] = current_node->childs[B_PLUS_TREE_INDEX_NODE_SIZE];
+    current_node->childs[B_PLUS_TREE_INDEX_NODE_SIZE] = NULL;
+    right_brother->child_size += 1;
+    current_node->child_size = B_PLUS_TREE_INDEX_NODE_SIZE/2+1;
+//    current_node->child_size -= 1;
+    //中间提取到父节点
+    current_node->index_node_size -= 1;
+    //兄弟节点
     right_brother->next = current_node->next;   //右兄弟
     right_brother->prev = current_node;     //左兄弟
     current_node->next = right_brother;
@@ -226,7 +236,8 @@ void BPlusTree::splitNonLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_n
         //无父节点
         p_parent = newBPlusNode();
         p_parent->is_leaf = false;
-        p_parent->index_nodes[0].value = right_brother->index_nodes[0].value;
+//        p_parent->index_nodes[0].value = right_brother->index_nodes[0].value;
+        p_parent->index_nodes[0].value = current_node->index_nodes[B_PLUS_TREE_INDEX_NODE_SIZE/2].value;
         p_parent->childs[0] = current_node;
         p_parent->childs[1] = right_brother;
         p_parent->index_node_size = 1;
@@ -241,7 +252,8 @@ void BPlusTree::splitNonLeafNode(BPlusTreeNode *&root, BPlusTreeNode *&current_n
             p_parent->index_nodes[index].value = p_parent->index_nodes[index-1].value;  //索引值后移
             p_parent->childs[index+1] = p_parent->childs[index];                        //子节点指针后移
         }
-        p_parent->index_nodes[parent_pos].value = right_brother->index_nodes[0].value;
+//        p_parent->index_nodes[parent_pos].value = right_brother->index_nodes[0].value;
+        p_parent->index_nodes[parent_pos].value = current_node->index_nodes[B_PLUS_TREE_INDEX_NODE_SIZE/2].value;
         p_parent->childs[parent_pos+1] = right_brother;
         p_parent->index_node_size += 1;
         p_parent->child_size += 1;
